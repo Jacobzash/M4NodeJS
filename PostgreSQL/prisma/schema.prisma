@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model autor {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(255)
+  libro_autor libro_autor[] @ignore
+}
+
+model cliente {
+  id       Int    @id @default(autoincrement())
+  nombre   String @db.VarChar(255)
+  apellido String @db.VarChar(255)
+  correo   String @db.VarChar(255)
+}
+
+model editorial {
+  id     Int     @id @default(autoincrement())
+  nombre String  @db.VarChar(255)
+  libro  libro[]
+}
+
+model libro {
+  id           Int           @id @default(autoincrement())
+  nombre       String        @db.VarChar(255)
+  publicacion  Int?
+  precio       Decimal?      @db.Decimal
+  id_editorial Int?
+  editorial    editorial?    @relation(fields: [id_editorial], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  libro_autor  libro_autor[] @ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model libro_autor {
+  id_autor Int
+  id_libro Int
+  autor    autor @relation(fields: [id_autor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  libro    libro @relation(fields: [id_libro], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@ignore
+}
+
+model usuario {
+  id             Int    @id @default(autoincrement())
+  nombre_usuario String @db.VarChar(255)
+  correo         String @db.VarChar(255)
+  contrasena     String @db.VarChar(255)
+}

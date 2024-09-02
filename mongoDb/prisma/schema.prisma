@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Cliente{ 
+ id       String      @id @default(auto()) @map("_id") @db.ObjectId
+ nombre     String?
+ apellido String?
+ email    String   @unique
+}
+
+model Usuario {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  nombreUsuario  String?
+  email     String  @unique
+  constrasena  String?
+}
+
+model Editorial{
+  id       String      @id @default(auto()) @map("_id") @db.ObjectId
+  nombre    String?
+  libros Libro[]
+}
+
+model Autor{
+  id       String      @id @default(auto()) @map("_id") @db.ObjectId
+  nombre    String?
+  libros LibroAutor[]
+}
+
+
+model Libro{
+  id       String      @id @default(auto()) @map("_id") @db.ObjectId
+  nombre  String?
+  publicacion Int
+  precio String
+  idEditorial String @db.ObjectId
+  editorial Editorial @relation(fields: [idEditorial], references: [id])
+  autores LibroAutor[]
+}
+
+model LibroAutor{
+  id       String      @id @default(auto()) @map("_id") @db.ObjectId
+  idLibro  String @db.ObjectId
+  libro Libro @relation(fields: [idLibro], references: [id])
+  idAutor  String @db.ObjectId
+  autor Autor @relation(fields: [idAutor], references: [id])
+}
